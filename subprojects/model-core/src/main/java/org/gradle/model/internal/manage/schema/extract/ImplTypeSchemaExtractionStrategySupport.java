@@ -134,13 +134,10 @@ public abstract class ImplTypeSchemaExtractionStrategySupport implements ModelSc
         }
 
         Map<Class<? extends Annotation>, Annotation> annotations = Maps.newLinkedHashMap();
-        for (Method getterMethod : getterContext.getDeclaringMethods()) {
-            for (Annotation annotation : getterMethod.getDeclaredAnnotations()) {
-                // Make sure more specific annotation doesn't get overwritten with less specific one
-                if (!annotations.containsKey(annotation.annotationType())) {
-                    annotations.put(annotation.annotationType(), annotation);
-                }
-            }
+        Map<Class<? extends Annotation>, Annotation> setterAnnotations = Maps.newLinkedHashMap();
+        collectAnnotations(getterContext.getDeclaringMethods(), annotations);
+        if (setterContext != null) {
+            collectAnnotations(setterContext.getDeclaringMethods(), setterAnnotations);
         }
 
         ImmutableSet<ModelType<?>> declaringClasses = ImmutableSet.copyOf(Iterables.transform(getterContext.getDeclaringMethods(), new Function<Method, ModelType<?>>() {
@@ -149,7 +146,18 @@ public abstract class ImplTypeSchemaExtractionStrategySupport implements ModelSc
             }
         }));
 
-        return ModelProperty.of(returnType, propertyName, managedProperty, writable, declaringClasses, annotations);
+        return ModelProperty.of(returnType, propertyName, managedProperty, writable, declaringClasses, annotations, setterAnnotations);
+    }
+
+    private void collectAnnotations(Collection<Method> methods, Map<Class<? extends Annotation>, Annotation> annotations) {
+        for (Method method : methods) {
+            for (Annotation annotation : method.getDeclaredAnnotations()) {
+                // Make sure more specific annotation doesn't get overwritten with less specific one
+                if (!annotations.containsKey(annotation.annotationType())) {
+                    annotations.put(annotation.annotationType(), annotation);
+                }
+            }
+        }
     }
 
     protected boolean isGetterDefinedInManagedType(ModelSchemaExtractionContext<?> extractionContext, String methodName, Collection<Method> getterMethods) {

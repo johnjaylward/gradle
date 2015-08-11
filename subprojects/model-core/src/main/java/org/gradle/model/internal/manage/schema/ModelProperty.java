@@ -36,18 +36,20 @@ public class ModelProperty<T> {
     private final boolean writable;
     private final Set<ModelType<?>> declaredBy;
     private final Map<Class<? extends Annotation>, Annotation> annotations;
+    private final Map<Class<? extends Annotation>, Annotation> setterAnnotations;
 
-    private ModelProperty(ModelType<T> type, String name, boolean managed, boolean writable, Set<ModelType<?>> declaredBy, Map<Class<? extends Annotation>, Annotation> annotations) {
+    private ModelProperty(ModelType<T> type, String name, boolean managed, boolean writable, Set<ModelType<?>> declaredBy, Map<Class<? extends Annotation>, Annotation> annotations, Map<Class<? extends Annotation>, Annotation> setterAnnotations) {
         this.name = name;
         this.type = type;
         this.managed = managed;
         this.writable = writable;
         this.declaredBy = ImmutableSet.copyOf(declaredBy);
         this.annotations = ImmutableMap.copyOf(annotations);
+        this.setterAnnotations = ImmutableMap.copyOf(setterAnnotations);
     }
 
-    public static <T> ModelProperty<T> of(ModelType<T> type, String name, boolean managed, boolean writable, Set<ModelType<?>> declaredBy, Map<Class<? extends Annotation>, Annotation> annotations) {
-        return new ModelProperty<T>(type, name, managed, writable, declaredBy, annotations);
+    public static <T> ModelProperty<T> of(ModelType<T> type, String name, boolean managed, boolean writable, Set<ModelType<?>> declaredBy, Map<Class<? extends Annotation>, Annotation> annotations, Map<Class<? extends Annotation>, Annotation> setterAnnotations) {
+        return new ModelProperty<T>(type, name, managed, writable, declaredBy, annotations, setterAnnotations);
     }
 
     public String getName() {
@@ -85,6 +87,13 @@ public class ModelProperty<T> {
         return annotations.values();
     }
 
+    /*
+     * Only stored so that validators can access them and complain about.
+     */
+    public Map<Class<? extends Annotation>, Annotation> getSetterAnnotations() {
+        return setterAnnotations;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -95,7 +104,6 @@ public class ModelProperty<T> {
         }
 
         ModelProperty<?> that = (ModelProperty<?>) o;
-
 
         return name.equals(that.name) && type.equals(that.type) && writable == that.writable;
     }
