@@ -63,6 +63,7 @@ import org.gradle.model.internal.manage.schema.ModelSchemaStore;
 import org.gradle.model.internal.manage.schema.extract.DefaultModelSchemaStore;
 import org.gradle.model.internal.manage.schema.extract.ModelSchemaExtractionStrategy;
 import org.gradle.model.internal.manage.schema.extract.ModelSchemaExtractor;
+import org.gradle.model.internal.manage.schema.extract.ModelSchemaValidationStrategy;
 import org.gradle.model.internal.persist.AlwaysNewModelRegistryStore;
 import org.gradle.model.internal.persist.ModelRegistryStore;
 import org.gradle.model.internal.persist.ReusingModelRegistryStore;
@@ -222,7 +223,8 @@ public class GlobalScopeServices {
 
     protected ModelSchemaExtractor createModelSchemaExtractor(ServiceRegistry serviceRegistry) {
         List<ModelSchemaExtractionStrategy> strategies = serviceRegistry.getAll(ModelSchemaExtractionStrategy.class);
-        return new ModelSchemaExtractor(strategies);
+        List<ModelSchemaValidationStrategy> validators = serviceRegistry.getAll(ModelSchemaValidationStrategy.class);
+        return new ModelSchemaExtractor(strategies, validators);
     }
 
     protected ModelSchemaStore createModelSchemaStore(ModelSchemaExtractor modelSchemaExtractor) {

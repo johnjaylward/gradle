@@ -16,6 +16,7 @@
 
 package org.gradle.model.internal.manage.schema.extract
 
+import org.gradle.api.Action
 import org.gradle.internal.reflect.MethodDescription
 import org.gradle.model.Managed
 import org.gradle.model.ModelMap
@@ -1081,6 +1082,28 @@ interface Managed${typeName} {
         schema.properties["managedCalculatedProp"].getAnnotation(CustomTestAnnotation).value() == "managedCalculated"
         schema.properties["managedCalculatedProp"].isManaged() == false
         schema.properties["managedCalculatedProp"].isWritable() == false
+    }
+
+    def "further validators can be attached to schema extraction"() {
+        def structValidator = Mock(Action)
+        def validationStrategy = Mock(ModelSchemaValidationStrategy)
+        def extractor = new ModelSchemaExtractor([], [validationStrategy])
+        def store = new DefaultModelSchemaStore(extractor)
+
+        when:
+        def resultSchema = store.getSchema(SimplePurelyManagedType)
+        then:
+        _ * validationStrategy.createValidator(_, _, _) >> { ModelSchemaExtractionContext<?> extractionContext, ModelSchema<?> schema, ModelSchemaCache cache ->
+            if (schema instanceof ModelStructSchema) {
+                assert schema.properties.keySet() == (["managedCalculatedProp", "managedProp"] as Set)
+                return structValidator
+            }
+            assert schema.kind == ModelSchema.Kind.VALUE
+            return null
+        }
+        1 * structValidator.execute(_) >> { ModelSchemaExtractionContext<?> extractionContext ->
+            assert extractionContext.type.rawClass == SimplePurelyManagedType
+        }
     }
 }
 

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import net.jcip.annotations.ThreadSafe;
+import org.gradle.api.Action;
 import org.gradle.internal.SystemProperties;
 import org.gradle.model.Managed;
 import org.gradle.model.ModelMap;
@@ -41,12 +42,13 @@ import java.util.Queue;
 public class ModelSchemaExtractor {
 
     private final List<? extends ModelSchemaExtractionStrategy> strategies;
+    private final List<? extends ModelSchemaValidationStrategy> validatorStrategies;
 
     public ModelSchemaExtractor() {
-        this(Collections.<ModelSchemaExtractionStrategy>emptyList());
+        this(Collections.<ModelSchemaExtractionStrategy>emptyList(), Collections.<ModelSchemaValidationStrategy>emptyList());
     }
 
-    public ModelSchemaExtractor(List<? extends ModelSchemaExtractionStrategy> strategies) {
+    public ModelSchemaExtractor(List<? extends ModelSchemaExtractionStrategy> strategies, List<? extends ModelSchemaValidationStrategy> validatorStrategies) {
         this.strategies = ImmutableList.<ModelSchemaExtractionStrategy>builder()
             .addAll(strategies)
             .add(new PrimitiveStrategy())
@@ -59,6 +61,7 @@ public class ModelSchemaExtractor {
             .add(new StructStrategy())
             .add(new UnmanagedStrategy())
             .build();
+        this.validatorStrategies = ImmutableList.copyOf(validatorStrategies);
     }
 
     public <T> ModelSchema<T> extract(ModelType<T> type, ModelSchemaStore store, ModelSchemaCache cache) {
@@ -70,6 +73,12 @@ public class ModelSchemaExtractor {
 
         while (extractionContext != null) {
             ModelSchemaExtractionResult<?> nextSchema = extractSchema(extractionContext, store, cache);
+            for (ModelSchemaValidationStrategy validatorStrategy : validatorStrategies) {
+                Action<? super ModelSchemaExtractionContext<?>> validator = validatorStrategy.createValidator(extractionContext, nextSchema.getSchema(), cache);
+                if (validator != null) {
+                    extractionContext.addValidator(validator);
+                }
+            }
             Iterable<? extends ModelSchemaExtractionContext<?>> dependencies = nextSchema.getDependencies();
             Iterables.addAll(validations, dependencies);
             pushUnsatisfiedDependencies(dependencies, unsatisfiedDependencies, cache);
