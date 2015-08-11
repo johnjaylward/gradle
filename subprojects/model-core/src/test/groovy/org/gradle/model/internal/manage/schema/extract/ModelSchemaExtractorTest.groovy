@@ -1084,6 +1084,19 @@ interface Managed${typeName} {
         schema.properties["managedCalculatedProp"].isWritable() == false
     }
 
+    @Managed
+    static abstract class ValidatedManagedType {
+        @CustomTestAnnotation("managed")
+        abstract String getManagedProp()
+        @CustomTestAnnotation("managedSetter")
+        abstract void setManagedProp(String managedProp)
+
+        @CustomTestAnnotation("managedCalculated")
+        String getManagedCalculatedProp() {
+            return "calc"
+        }
+    }
+
     def "further validators can be attached to schema extraction"() {
         def structValidator = Mock(Action)
         def validationStrategy = Mock(ModelSchemaValidationStrategy)
@@ -1091,7 +1104,7 @@ interface Managed${typeName} {
         def store = new DefaultModelSchemaStore(extractor)
 
         when:
-        def resultSchema = store.getSchema(SimplePurelyManagedType)
+        def resultSchema = store.getSchema(ValidatedManagedType)
         then:
         _ * validationStrategy.createValidator(_, _, _) >> { ModelSchemaExtractionContext<?> extractionContext, ModelSchema<?> schema, ModelSchemaCache cache ->
             if (schema instanceof ModelStructSchema) {
@@ -1102,7 +1115,7 @@ interface Managed${typeName} {
             return null
         }
         1 * structValidator.execute(_) >> { ModelSchemaExtractionContext<?> extractionContext ->
-            assert extractionContext.type.rawClass == SimplePurelyManagedType
+            assert extractionContext.type.rawClass == ValidatedManagedType
         }
     }
 }
