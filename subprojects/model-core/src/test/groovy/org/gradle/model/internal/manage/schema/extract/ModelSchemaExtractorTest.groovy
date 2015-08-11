@@ -913,7 +913,7 @@ interface Managed${typeName} {
                 }
             }
         }
-        def extractor = new ModelSchemaExtractor([strategy])
+        def extractor = new ModelSchemaExtractor([strategy], [])
         def store = new DefaultModelSchemaStore(extractor)
 
         then:
@@ -990,7 +990,7 @@ interface Managed${typeName} {
     def "properties are extracted from unmanaged type with managed super-type"() {
         def extractor = new ModelSchemaExtractor([
             new TestUnmanagedTypeWithManagedSuperTypeExtractionStrategy(SimpleUnmanagedTypeWithAnnotations)
-        ])
+        ], [])
         def store = new DefaultModelSchemaStore(extractor)
 
         when:

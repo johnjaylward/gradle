@@ -42,7 +42,7 @@ class BinaryTypeModelRuleExtractorTest extends AbstractAnnotationModelRuleExtrac
         new DefaultModelSchemaStore(
             new ModelSchemaExtractor([
                 new BinarySpecSpecializationSchemaExtractionStrategy()
-            ])
+            ], [])
         )
     )
 
