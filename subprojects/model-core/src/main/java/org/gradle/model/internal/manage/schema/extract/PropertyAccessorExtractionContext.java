@@ -44,7 +44,7 @@ public class PropertyAccessorExtractionContext {
      * lose their generic type parameters and can confuse schema extraction. This way we can ignore these
      * declarations, and use the ones from the proxied interfaces instead.
      *
-     * @param method declarations of the same method from different types in the type hierarchy. They are
+     * @param declaringMethods declarations of the same method from different types in the type hierarchy. They are
      *      expected to be in order of specificity, i.e. overrides preceding overridden declarations.
      * @return the most specific declaration of the method.
      * @throws IllegalArgumentException if no declaration can be found.
