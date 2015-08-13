@@ -51,6 +51,10 @@ public class PropertyAccessorExtractionContext {
      */
     private static Method findMostSpecificMethod(Collection<Method> declaringMethods) {
         for (Method method : declaringMethods) {
+            if (method.isSynthetic()) {
+                continue;
+            }
+
             if (Proxy.isProxyClass(method.getDeclaringClass())) {
                 continue;
             }

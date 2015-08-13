@@ -60,7 +60,7 @@ public class DefaultNativePlatform implements NativePlatformInternal {
     }
 
     public String getDisplayName() {
-        return String.format("platform '%s'", name);
+        return name;
     }
 
     public ArchitectureInternal getArchitecture() {

@@ -56,9 +56,9 @@ Binaries
     Executable 'someExe:executable'
         build using task: :someExeExecutable
         install using task: :installSomeExeExecutable
-        platform: $currentNative
-        build type: debug
+        build-type: debug
         flavor: default
+        target-platform: $currentNative
         tool chain: Tool chain 'clang' (Clang)
         executable file: build/binaries/someExeExecutable/someExe
 
@@ -73,9 +73,9 @@ Binaries
     Google test exe 'someExeTest:googleTestExe'
         build using task: :someExeTestGoogleTestExe
         run using task: :runSomeExeTestGoogleTestExe
-        platform: $currentNative
-        build type: debug
+        build-type: debug
         flavor: default
+        target-platform: $currentNative
         tool chain: Tool chain 'clang' (Clang)
         executable file: build/binaries/someExeTestGoogleTestExe/someExeTest
 """

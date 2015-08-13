@@ -94,16 +94,16 @@ Source sets
 Binaries
     Shared library 'nativeLib:sharedLibrary'
         build using task: :nativeLibSharedLibrary
-        platform: $currentNative
-        build type: debug
+        build-type: debug
         flavor: default
+        target-platform: $currentNative
         tool chain: Tool chain 'clang' (Clang)
         shared library file: build/binaries/nativeLibSharedLibrary/libnativeLib.dylib
     Static library 'nativeLib:staticLibrary'
         build using task: :nativeLibStaticLibrary
-        platform: $currentNative
-        build type: debug
+        build-type: debug
         flavor: default
+        target-platform: $currentNative
         tool chain: Tool chain 'clang' (Clang)
         static library file: build/binaries/nativeLibStaticLibrary/libnativeLib.a
 """

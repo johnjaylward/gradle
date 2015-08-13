@@ -44,6 +44,11 @@ public class DefaultScalaPlatform implements ScalaPlatform {
         return String.format("Scala Platform (Scala %s)", scalaVersion);
     }
 
+    @Override
+    public String toString() {
+        return getDisplayName();
+    }
+
     public String getName() {
         return String.format("ScalaPlatform%s", scalaVersion);
     }

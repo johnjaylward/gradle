@@ -44,6 +44,11 @@ public class DefaultPlayPlatform implements PlayPlatformInternal {
     }
 
     @Override
+    public String toString() {
+        return getDisplayName();
+    }
+
+    @Override
     public String getPlayVersion() {
         return playVersion;
     }

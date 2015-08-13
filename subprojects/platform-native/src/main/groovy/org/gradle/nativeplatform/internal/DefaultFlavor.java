@@ -36,6 +36,6 @@ public class DefaultFlavor implements Flavor {
     }
 
     public String getDisplayName() {
-        return String.format("flavor '%s'", name);
+        return name;
     }
 }
